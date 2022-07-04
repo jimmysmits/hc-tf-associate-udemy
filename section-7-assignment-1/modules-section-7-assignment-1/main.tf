@@ -1,9 +1,18 @@
 resource "aws_instance" "my-ec2" {
-  instance_type = var.instance_type
-  ami           = var.ami
-  ebs_block_device {
-    device_name = "/dev/sda1"
-  }
+  instance_type     = var.instance_type
+  ami               = var.ami
+  availability_zone = var.availability_zone
+}
+
+resource "aws_ebs_volume" "my-volume" {
+  availability_zone = var.availability_zone
+  size              = 40
+}
+
+resource "aws_volume_attachment" "my-volume-attachment" {
+  device_name = "/dev/sdh"
+  instance_id = aws_instance.my-ec2.id
+  volume_id   = aws_ebs_volume.my-volume.id
 }
 
 resource "aws_cloudwatch_metric_alarm" "my-cloudwatch-alarm" {
